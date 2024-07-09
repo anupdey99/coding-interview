@@ -1,0 +1,70 @@
+Write a function that does the following task.
+Given two strings needle and haystack, return the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+Also, mention the Time and Space Complexity of your solution
+
+Constraints: 
+1 <= haystack.length, needle.length <= 10^4
+haystack and needle consist of only lowercase English characters.
+
+Example 1:
+Input: haystack = "sadbutsad", needle = "sad"
+Output: 0
+Explanation: "sad" occurs at index 0 and 6.
+The first occurrence is at index 0, so we return 0.
+
+Example 2:
+Input: haystack = "codemama", needle = "ostad"
+Output: -1
+
+Solution using python
+
+def strStr(haystack, needle):
+    n = len(haystack)
+    m = len(needle)
+    
+    if m == 0:
+        return 0
+    
+    # Calculate the hash value of needle and the first window of haystack
+    needle_hash = hash_str(needle)
+    haystack_hash = hash_str(haystack[:m])
+    
+    # Iterate through haystack to find the needle
+    for i in range(n - m + 1):
+        if haystack_hash == needle_hash and haystack[i:i+m] == needle:
+            return i
+        if i < n - m:
+            haystack_hash = rehash(haystack_hash, haystack[i], haystack[i+m], m)
+    
+    return -1
+
+# Helper function to compute hash value of a string
+def hash_str(s):
+    hash_value = 0
+    p = 31  # prime number for hashing
+    m = 10**9 + 9  # large prime modulus
+    p_power = 1
+    
+    for char in s:
+        hash_value = (hash_value + (ord(char) - ord('a') + 1) * p_power) % m
+        p_power = (p_power * p) % m
+    
+    return hash_value
+
+# Helper function to rehash for sliding window
+def rehash(old_hash, old_char, new_char, m):
+    p = 31  # prime number for hashing
+    m = 10**9 + 9  # large prime modulus
+    old_hash = (old_hash - (ord(old_char) - ord('a') + 1)) // p
+    new_hash = (old_hash + (ord(new_char) - ord('a') + 1) * pow(p, m-1, m)) % m
+    return new_hash
+
+# Test cases
+print(strStr("sadbutsad", "sad"))   # Output: 0
+print(strStr("codemama", "ostad"))  # Output: -1
+
+Time Complexity
+Average Case: O(n + m)
+
+Space Complexity
+O(1)
